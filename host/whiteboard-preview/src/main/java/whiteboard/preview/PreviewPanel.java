@@ -1,6 +1,7 @@
-package whiteboard.svg;
+package whiteboard.preview;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -25,13 +26,13 @@ import org.apache.batik.gvt.ShapeNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
 
-public class SvgPathDemo extends JPanel {
+public class PreviewPanel extends JPanel {
     
     private Dimension2D size;
     private GraphicsNode root;
     private static final double FLATTENING = 0.1;
     
-    public SvgPathDemo(String uri) throws IOException {
+    public PreviewPanel(String uri) throws IOException {
         String parser = XMLResourceDescriptor.getXMLParserClassName();
         SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
         Document doc = f.createDocument(uri);
@@ -40,6 +41,8 @@ public class SvgPathDemo extends JPanel {
         BridgeContext context = new SVG12BridgeContext(new UserAgentAdapter());
         root = builder.build(context, doc);
         size = context.getDocumentSize();
+        
+        setPreferredSize(new Dimension(400, 400));
     }
     
     public void paintComponent(Graphics g1) {
@@ -82,13 +85,5 @@ public class SvgPathDemo extends JPanel {
             }
             n = walker.nextGraphicsNode();
         }
-    }
-    
-    public static void main(String[] args) throws IOException {
-        JFrame f = new JFrame();
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        f.setSize(600, 600);
-        f.setContentPane(new SvgPathDemo(SvgPathDemo.class.getResource("rosette.svg").toExternalForm()));
-        f.setVisible(true);
     }
 }

@@ -3,12 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>whiteboard</groupId>
-  <artifactId>whiteboard-svg</artifactId>
+  <artifactId>whiteboard-preview</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-
-  <name>whiteboard-svg</name>
-  <url>http://maven.apache.org</url>
+  
+  <parent>
+    <groupId>whiteboard</groupId>
+    <artifactId>whiteboard-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
