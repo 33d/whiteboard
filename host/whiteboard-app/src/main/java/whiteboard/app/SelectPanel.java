@@ -15,8 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import whiteboard.svgreader.SvgReader;
+
 import net.miginfocom.swing.MigLayout;
-import whiteboard.preview.PreviewPanel;
 
 public class SelectPanel extends JPanel {
     
@@ -40,7 +41,7 @@ public class SelectPanel extends JPanel {
         public void actionPerformed(ActionEvent ev) {
             try {
                 String uri = new File(filenameField.getText()).toURI().toASCIIString();
-                PreviewPanel preview = new PreviewPanel(uri);
+                PreviewPanel preview = new PreviewPanel(new SvgReader(uri));
                 JDialog d = new JDialog(SwingUtilities.getWindowAncestor(SelectPanel.this));
                 d.setContentPane(preview);
                 d.pack();

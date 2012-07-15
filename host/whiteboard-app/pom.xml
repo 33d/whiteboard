@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>whiteboard</groupId>
-      <artifactId>whiteboard-preview</artifactId>
+      <artifactId>whiteboard-svgreader</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>whiteboard-preview</module>
     <module>whiteboard-app</module>
+    <module>whiteboard-svgreader</module>
   </modules>
 </project>
