@@ -18,6 +18,7 @@ public class WhiteboardDialog extends JPanel {
     private final JTextField instructionField;
     private final AbstractButton goButton;
     private final WhiteboardPanel whiteboard;
+    private boolean stepping = false;
 
     public WhiteboardDialog() {
         super(new BorderLayout());
@@ -47,13 +48,16 @@ public class WhiteboardDialog extends JPanel {
         public void propertyChange(PropertyChangeEvent e) {
             if ("running".equals(e.getPropertyName()) 
                     && FALSE.equals(e.getNewValue()) 
-                    && goButton.isSelected()) {
-                step();
+                    && goButton.isSelected()
+                    && !stepping) {
+                while (!whiteboard.isRunning() && !instructionField.getText().isEmpty())
+                    step();
             }
         }
     };
     
     private void step() {
+        stepping = true;
         double left = Double.NaN;
         String[] sp = new String[] { "", instructionField.getText() };
         
@@ -78,17 +82,14 @@ public class WhiteboardDialog extends JPanel {
                         throw new ParseException(e);
                     }
                 }
-                
-                if (sp.length == 1) {
-                    throw new ParseException();
-                }
             };
 
-            instructionField.setText(sp.length > 1 ? sp[1] : "");
-            
         } catch (ParseException e) {
             goButton.setSelected(false);
         }
+        
+        instructionField.setText(sp.length > 1 ? sp[1] : "");        
+        stepping = false;
     }
     
     private static class ParseException extends Exception {

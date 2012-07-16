@@ -1,5 +1,6 @@
 package whiteboard.svgreader;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.PathIterator;
 import java.io.IOException;
@@ -37,6 +38,10 @@ public class SvgReader {
     }
 
     public PathIterator getPathIterator() {
+        return getPathIterator(new AffineTransform());
+    }    
+    
+    public PathIterator getPathIterator(final AffineTransform transform) {
         final GVTTreeWalker walker = new GVTTreeWalker(root);
         
         return new PathIterator() {
@@ -75,7 +80,9 @@ public class SvgReader {
                 } while (n != null && !(n instanceof ShapeNode));
                 if (n != null) {
                     ShapeNode s = (ShapeNode) n;
-                    current = s.getShape().getPathIterator(n.getGlobalTransform(), FLATTENING);
+                    AffineTransform t = (AffineTransform) n.getGlobalTransform().clone();
+                    t.concatenate(transform);
+                    current = s.getShape().getPathIterator(t, FLATTENING);
                 } else
                     current = null;
             }

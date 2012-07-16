@@ -42,7 +42,7 @@ public class WhiteboardPanel extends JPanel {
     private static final Stroke drawStroke 
         = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL);
     private Animator animator;
-    private static final double speed = 1.0/5000; // radians per millisecond
+    private static final double speed = 1.0/500; // radians per millisecond
     /** The position of each wheel, in radians.  0 is the starting position. */
     private final double[] pos = new double[2];
     /** The distance each wheel has to turn during this animation */
@@ -112,7 +112,7 @@ public class WhiteboardPanel extends JPanel {
             for (int i = 0; i < 2; i++) {
                 double diff = distance[i] * (fraction - previous);
                 pos[i] += diff;
-                strings[i] += Math.PI * wheelRadius * diff;
+                strings[i] += wheelRadius * diff;
             }
             previous = fraction;
             repaint();
@@ -129,12 +129,17 @@ public class WhiteboardPanel extends JPanel {
         if (animator != null)
             animator.stop();
         double max = Math.max(Math.abs(w[0]), Math.abs(w[1]));
-        arraycopy(w, 0, distance, 0, 2);
-        animator = new Animator.Builder()
-            .setDuration((long) (max / speed), TimeUnit.MILLISECONDS)
-            .addTarget(timingTarget)
-            .build();
-        animator.start();
+        long duration = (long) (max / speed);
+        setRunning(true);
+        if (duration > 0) {
+            arraycopy(w, 0, distance, 0, 2);
+            animator = new Animator.Builder()
+                .setDuration(duration, TimeUnit.MILLISECONDS)
+                .addTarget(timingTarget)
+                .build();
+            animator.start();
+        } else
+            setRunning(false);
     }
 
     private static class Result {

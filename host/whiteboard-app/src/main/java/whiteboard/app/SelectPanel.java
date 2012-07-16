@@ -1,6 +1,7 @@
 package whiteboard.app;
 
 import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 
@@ -21,9 +22,10 @@ import net.miginfocom.swing.MigLayout;
 
 public class SelectPanel extends JPanel {
     
-    private final JFormattedTextField reelSpacingField = new JFormattedTextField(70.0);
-    private final JFormattedTextField startXField = new JFormattedTextField(20.0);
-    private final JFormattedTextField startYField = new JFormattedTextField(20.0);
+    private final JFormattedTextField reelSpacingField = new JFormattedTextField(500.0);
+    private final JFormattedTextField reelRadiusField = new JFormattedTextField(25.0);
+    private final JFormattedTextField startXField = new JFormattedTextField(250.0);
+    private final JFormattedTextField startYField = new JFormattedTextField(220.0);
     private final JTextField filenameField = new JTextField();
     private final JButton chooseFileButton 
             = new JButton(new AbstractAction("Choose file") {
@@ -51,7 +53,28 @@ public class SelectPanel extends JPanel {
             }
         }
     });
-    private final JButton simulateButton = new JButton("Simulate");
+    private final JButton simulateButton 
+            = new JButton(new AbstractAction("Simulate") {
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            try {
+                Converter c = new Converter();
+                c.setReelRadius((Double) reelRadiusField.getValue());
+                c.setReelSpacing((Double) reelSpacingField.getValue());
+                c.setStartX((Double) startXField.getValue());
+                c.setStartY((Double) startYField.getValue());
+                
+                String uri = new File(filenameField.getText()).toURI().toASCIIString();
+                SvgReader reader = new SvgReader(uri);
+                double scale = c.getReelSpacing() / reader.getSize().getWidth();
+                AffineTransform t = AffineTransform.getScaleInstance(scale, scale);
+                
+                c.convert(reader.getPathIterator(t), System.out);
+            } catch (IOException e) {
+                e.printStackTrace(); // todo: show a dialog
+            }
+        }
+    });
 
     public SelectPanel() {
         super(new MigLayout("", "[right]rel[300lp,grow,fill]"));
@@ -59,6 +82,8 @@ public class SelectPanel extends JPanel {
         add(new JLabel("Filename"));
         add(filenameField, "grow, span");
         add(chooseFileButton, "skip 1, wrap, grow 0");
+        add(new JLabel("Reel radius"));
+        add(reelRadiusField, "wrap");
         add(new JLabel("Reel spacing"));
         add(reelSpacingField, "wrap");
         add(new JLabel("Start position left"));
