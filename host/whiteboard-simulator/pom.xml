@@ -7,6 +7,12 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <parent>
+    <groupId>whiteboard</groupId>
+    <artifactId>whiteboard-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
   <name>whiteboard-simulator</name>
 
   <properties>

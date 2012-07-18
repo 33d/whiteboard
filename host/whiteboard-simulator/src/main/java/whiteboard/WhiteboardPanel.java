@@ -27,8 +27,10 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
+import org.jdesktop.core.animation.timing.TimingSource;
 import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
+import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
 public class WhiteboardPanel extends JPanel {
 
@@ -59,6 +61,7 @@ public class WhiteboardPanel extends JPanel {
         renderingHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         renderingHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
     }
+    private final TimingSource timingSource;
     
     /** A wheel shape 1 unit in radius, centred at 0,0 */
     private static final Shape wheelShape;
@@ -94,6 +97,14 @@ public class WhiteboardPanel extends JPanel {
                 repaint();
             }
         });
+        
+        timingSource = new SwingTimerTimingSource(30, TimeUnit.MILLISECONDS);
+        timingSource.init();
+    }
+    
+    public void removeNotify() {
+        super.removeNotify();
+        timingSource.dispose();
     }
     
     private final TimingTarget timingTarget = new TimingTargetAdapter() {
@@ -133,7 +144,7 @@ public class WhiteboardPanel extends JPanel {
         setRunning(true);
         if (duration > 0) {
             arraycopy(w, 0, distance, 0, 2);
-            animator = new Animator.Builder()
+            animator = new Animator.Builder(timingSource)
                 .setDuration(duration, TimeUnit.MILLISECONDS)
                 .addTarget(timingTarget)
                 .build();

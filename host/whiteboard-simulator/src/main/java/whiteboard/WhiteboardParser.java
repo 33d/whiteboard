@@ -2,45 +2,25 @@ package whiteboard;
 
 import static java.lang.Boolean.FALSE;
 
-import java.awt.BorderLayout;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
-import javax.swing.AbstractButton;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JToggleButton;
-
-public class WhiteboardDialog extends JPanel {
+public class WhiteboardParser {
     
-    private final JTextField instructionField;
-    private final AbstractButton goButton;
     private final WhiteboardPanel whiteboard;
     private boolean stepping = false;
+    private final ByteArrayInputStream in;
 
-    public WhiteboardDialog() {
-        super(new BorderLayout());
-        
-        instructionField = new JTextField("D -1 0 D 0 -0.5 M 0 -0.5 D 1 0 D 0 1");
-        goButton = new JToggleButton("Go");
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(instructionField, BorderLayout.CENTER);
-        p.add(goButton, BorderLayout.LINE_END);
-        add(p, BorderLayout.NORTH);
-        
-        whiteboard = new WhiteboardPanel(25, 500, 800);
+    public WhiteboardParser(WhiteboardPanel whiteboard, byte[] data) {
+        this.whiteboard = whiteboard;
         whiteboard.addPropertyChangeListener(runningListener);
-        add(whiteboard, BorderLayout.CENTER);
-
-        goButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && !whiteboard.isRunning())
-                    step();
-            }
-        });
+        in = new ByteArrayInputStream(data);
+    }
+    
+    public void start() {
+        step();
     }
     
     private PropertyChangeListener runningListener = new PropertyChangeListener() {
@@ -48,23 +28,32 @@ public class WhiteboardDialog extends JPanel {
         public void propertyChange(PropertyChangeEvent e) {
             if ("running".equals(e.getPropertyName()) 
                     && FALSE.equals(e.getNewValue()) 
-                    && goButton.isSelected()
                     && !stepping) {
-                while (!whiteboard.isRunning() && !instructionField.getText().isEmpty())
+                while (!whiteboard.isRunning() && in.available() > 0)
                     step();
             }
         }
     };
     
+    private String nextToken() {
+        StringBuilder b = new StringBuilder();
+        int c;
+        while (true) {
+            c = in.read();
+            if (c == ' ' || c == -1)
+                break;
+            b.append((char) c);
+        }
+        return b.toString();
+    }
+    
     private void step() {
         stepping = true;
         double left = Double.NaN;
-        String[] sp = new String[] { "", instructionField.getText() };
         
         try {
             parseloop: while(true) {
-                sp = sp[1].split(" +", 2);
-                String token = sp[0].toUpperCase();
+                String token = nextToken();
                 if ("D".equals(token))
                     whiteboard.setDrawing(true);
                 else if ("M".equals(token))
@@ -85,10 +74,7 @@ public class WhiteboardDialog extends JPanel {
             };
 
         } catch (ParseException e) {
-            goButton.setSelected(false);
         }
-        
-        instructionField.setText(sp.length > 1 ? sp[1] : "");        
         stepping = false;
     }
     

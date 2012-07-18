@@ -2,6 +2,7 @@ package whiteboard.app;
 
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -16,9 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import whiteboard.svgreader.SvgReader;
-
 import net.miginfocom.swing.MigLayout;
+import whiteboard.WhiteboardPanel;
+import whiteboard.WhiteboardParser;
+import whiteboard.svgreader.SvgReader;
 
 public class SelectPanel extends JPanel {
     
@@ -58,24 +60,27 @@ public class SelectPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent ev) {
             try {
-                Converter c = new Converter();
-                c.setReelRadius((Double) reelRadiusField.getValue());
-                c.setReelSpacing((Double) reelSpacingField.getValue());
-                c.setStartX((Double) startXField.getValue());
-                c.setStartY((Double) startYField.getValue());
+                byte[] data = createOutput();
                 
-                String uri = new File(filenameField.getText()).toURI().toASCIIString();
-                SvgReader reader = new SvgReader(uri);
-                double scale = c.getReelSpacing() / reader.getSize().getWidth();
-                AffineTransform t = AffineTransform.getScaleInstance(scale, scale);
+                WhiteboardPanel p = new WhiteboardPanel(
+                        (Double) reelRadiusField.getValue(),
+                        (Double) reelSpacingField.getValue(),
+                        1024
+                );
                 
-                c.convert(reader.getPathIterator(t), System.out);
+                JDialog d = new JDialog(SwingUtilities.getWindowAncestor(SelectPanel.this));
+                d.setContentPane(p);
+                d.setSize(600, 600);
+                d.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                d.setVisible(true);
+                
+                new WhiteboardParser(p, data).start();
             } catch (IOException e) {
                 e.printStackTrace(); // todo: show a dialog
             }
         }
     });
-
+    
     public SelectPanel() {
         super(new MigLayout("", "[right]rel[300lp,grow,fill]"));
         
@@ -94,6 +99,24 @@ public class SelectPanel extends JPanel {
         add(simulateButton, "wrap");
     }
     
+    private byte[] createOutput() throws IOException {
+        Converter c = new Converter();
+        c.setReelRadius((Double) reelRadiusField.getValue());
+        c.setReelSpacing((Double) reelSpacingField.getValue());
+        c.setStartX((Double) startXField.getValue());
+        c.setStartY((Double) startYField.getValue());
+        
+        String uri = new File(filenameField.getText()).toURI().toASCIIString();
+        SvgReader reader = new SvgReader(uri);
+        double scale = c.getReelSpacing() / reader.getSize().getWidth();
+        AffineTransform t = AffineTransform.getScaleInstance(scale, scale);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        c.convert(reader.getPathIterator(t), out);
+        
+        return out.toByteArray();
+    }
+
     public static void main(String[] args) {
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
