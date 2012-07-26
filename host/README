@@ -1,0 +1,4 @@
+I use Maven to build this.  Install Maven, then run "mvn eclipse:eclipse"
+in this directory to create Eclipse projects.  Then use the Import Project
+function in Eclipse to open the projects.
+
