@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
-   sodipodi:docname="reel-side.svg">
+   sodipodi:docname="reel-side.dxf">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -24,7 +24,7 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.6159155"
+     inkscape:zoom="3.5029181"
      inkscape:cx="95.931064"
      inkscape:cy="46.333384"
      inkscape:document-units="mm"
@@ -33,8 +33,8 @@
      units="mm"
      inkscape:window-width="995"
      inkscape:window-height="620"
-     inkscape:window-x="298"
-     inkscape:window-y="58"
+     inkscape:window-x="335"
+     inkscape:window-y="52"
      inkscape:window-maximized="0">
     <inkscape:grid
        type="xygrid"
@@ -55,7 +55,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -66,10 +66,10 @@
      transform="translate(0,-995.66927)">
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 0,-3.3040686e-7 0,56.692913 l 63.779528,0 7.086614,-28.346457 70.866138,0 14.17323,28.346457 21.25984,0 0,-7.086614 -14.17322,-14.173228 0,-14.173229 14.17322,-14.1732282 0,-7.08661413040686 z"
-       id="path3057"
+       d="m 0,30.11811 0,26.574803 177.16535,0 0,-7.086614 -14.17322,-14.173228 0,-14.173229 14.17322,-14.1732282 0,-7.08661413040686 -14.17322,0 L 132.87402,30.11811 z"
+       id="path3792"
        inkscape:connector-curvature="0"
        transform="translate(0,995.66927)"
-       sodipodi:nodetypes="ccccccccccccc" />
+       sodipodi:nodetypes="ccccccccccc" />
   </g>
 </svg>
