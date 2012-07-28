@@ -14,10 +14,13 @@ cube([80, 20, 12]);
 translate([68, 0, 6]) rotate([-90, 0, 0])
 pinhole(r=3, h=8, t=tolerance, tight=false);
 
-translate([18, 0, 6]) rotate([-90, 0, 0])
+translate([68, 20, 6]) rotate([90, 0, 0])
 pinhole(r=3, h=8, t=tolerance, tight=false);
 
-translate([68, 20, 6]) rotate([90, 0, 0])
+// I don't need both holes at the front, but this lets me turn the top platform upside down
+translate([18, 0, 6]) rotate([-90, 0, 0])
+pinhole(r=3, h=8, t=tolerance, tight=false);
+translate([18, 20, 6]) rotate([90, 0, 0])
 pinhole(r=3, h=8, t=tolerance, tight=false);
 
 // The groove
