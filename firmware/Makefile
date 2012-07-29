@@ -2,7 +2,7 @@ PROJECT	       = whiteboard
 
 PRG            = $(PROJECT)
 OBJECTS        = parser
-AVR_OBJECTS    =  
+AVR_OBJECTS    = serial whiteboard
 TEST_OBJECTS   = parsertest test
 
 ARDUINO_HOME  ?= /opt/arduino-0018
@@ -18,7 +18,7 @@ MCU_TARGET    ?= atmega328p
 #MCU_TARGET     = atmega168
 OPTIMIZE       = -Os
 
-DEFS           = -DF_CPU=20000000L
+DEFS           = -DF_CPU=16000000L
 LIBS           = -lm
 TEST_LIBS       = -lcppunit
 
@@ -55,7 +55,7 @@ all: $(PRG).elf lst text eeprom
 
 $(PRG).elf: $(BUILD_OBJS)
 	# I have no idea why I need $(LIBS) twice
-	$(AVRCPP) $(AVRCPPFLAGS) $(AVRLDFLAGS) -o $@ $(LIBS) $^ $(LIBS)
+	$(AVRCPP) $(AVRCPPFLAGS) $(AVRLDFLAGS) -o $@ $(LIBS) $^ $(LIBS)  -Wl,-u,vfprintf -lprintf_flt
 
 %.avr.o : %.c 
 	$(AVRCC) $(AVRCFLAGS) $(INCLUDES) -c -o $@ $<
