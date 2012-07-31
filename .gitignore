@@ -2,3 +2,12 @@
 target
 .settings
 .classpath
+.cproject
+*.avr.o
+*.bin
+*.elf
+*.hex
+*.lst
+*.map
+*.srec
+firmware/test
