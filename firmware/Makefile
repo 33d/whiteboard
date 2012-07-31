@@ -18,7 +18,7 @@ MCU_TARGET    ?= atmega328p
 #MCU_TARGET     = atmega168
 OPTIMIZE       = -Os
 
-DEFS           = -DF_CPU=16000000L
+DEFS           = -DF_CPU=20000000L
 LIBS           = -lm
 TEST_LIBS       = -lcppunit
 

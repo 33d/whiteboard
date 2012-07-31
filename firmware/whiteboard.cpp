@@ -5,6 +5,7 @@
 #include <avr/sleep.h>
 #include "parser.h"
 #include "serial.h" // for printf
+#include "motor.h"
 
 // Serial port settings
 #define SERIAL_BAUD 9600
@@ -17,6 +18,8 @@
 #define SERIAL_UBRR_VAL ((F_CPU / 16 / SERIAL_BAUD) - 1)
 #endif
 
+#define MS_PER_TIMER1_TICK (1024 / F_CPU * 1000)
+
 namespace Events {
     const uint8_t SERIAL_RX = 1;
     char serial_rx;
@@ -25,10 +28,23 @@ namespace Events {
 
 Parser parser;
 
+Motor left_motor(&OCR0A, &OCR0B);
+Motor right_motor(&OCR2B, &OCR2A);
+
+static void run_motor(Motor& motor, float speed) {
+    motor.set_direction(speed > 0 ? Motor::FORWARDS : Motor::BACKWARDS);
+    if (speed < 0) speed = -speed;
+    motor.set_speed((uint8_t) (speed * 255));
+}
+
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
         printf("%d %f %f\n", parser.command, parser.args[0], parser.args[1]);
-        PINB |= _BV(PORTB5);
+        if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
+            run_motor(left_motor, parser.args[0]);
+            run_motor(right_motor, parser.args[1]);
+            printf("%d %d\n", OCR0A, OCR0B);
+        }
     }
     events &= ~Events::SERIAL_RX;
 }
@@ -53,11 +69,42 @@ void init_serial() {
     ;
 }
 
+void init_timers() {
+    TCCR0A =
+        // Set output pins on compare match, clear on overflow
+        _BV(COM0A1) | _BV(COM0A0)
+        | _BV(COM0B1) | _BV(COM0B0)
+        // Fast PWM mode, between 0 and 0xFF
+        | _BV(WGM01) | _BV(WGM00);
+    TCCR0B =
+        // 8x prescaling
+        _BV(CS01);
+
+    // Repeat for timer 2
+    TCCR2A =
+        // Set timers on compare match, clear on overflow
+        _BV(COM2A1) | _BV(COM2A0)
+        | _BV(COM2B1) | _BV(COM2B0)
+        // Fast PWM mode, between 0 and 0xFF
+        | _BV(WGM21) | _BV(WGM20);
+    TCCR0B =
+        // 8x prescaling
+        _BV(CS21);
+
+    // Use timer 1 for the clock
+    TCCR1A = 0; // Normal mode, no output
+    TCCR1B = _BV(CS12) | _BV(CS10); // 1024x prescaling
+}
+
 int main(void) {
     init_serial();
     serial_init();
+    init_timers();
 
     DDRB |= _BV(PORTB5);
+    // Set the motors as outputs
+    DDRB |= _BV(PORTB3);
+    DDRD |= _BV(PORTD3) | _BV(PORTD5) | _BV(PORTD6);
 
     sei();
 
