@@ -18,8 +18,8 @@ public:
     void set_direction(Direction direction) { this->direction = direction; }
     void set_speed(uint8_t speed) {
         if (speed == 0) {
-            *f_reg = ~0;
-            *b_reg = ~0;
+            *f_reg = 0;
+            *b_reg = 0;
         } else if (direction == FORWARDS) {
             *b_reg = 0;
             *f_reg = speed;
