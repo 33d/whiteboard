@@ -22,7 +22,7 @@ bool Parser::handle(char c) {
         buf[0] = 0;
         return (args_count == arg_count[command]);
     }
-    if ((c >= '0' && c <= '9') || c == '.')
+    if ((c >= '0' && c <= '9') || c == '-' || c == '.')
         append(buf, c);
     else {
         const char* command_p = strchr(command_chars, c);
