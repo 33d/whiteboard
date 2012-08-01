@@ -14,7 +14,7 @@ class Encoder {
     const Motor& motor;
     volatile const uint8_t* const port;
     const uint8_t pin;
-    uint16_t count;
+    int16_t count;
     bool old;
 
 public:
@@ -24,7 +24,7 @@ public:
     Encoder(const Motor& motor, volatile const uint8_t* const port, uint8_t pin)
         : motor(motor), port(port), pin(pin) {}
     void check();
-    uint16_t get_count() { return count; }
+    int16_t get_count() { return count; }
 };
 
 #endif

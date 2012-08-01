@@ -12,7 +12,7 @@ private:
     uint8_t args_count;
 
 public:
-    double args[2];
+    int16_t args[2];
     uint8_t command;
 
     Parser() : args_count(0) { buf[0] = 0; }

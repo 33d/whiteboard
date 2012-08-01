@@ -18,7 +18,7 @@ bool Parser::handle(char c) {
     if (c == 0)
         return false;
     if (c == ' ' && strlen(buf) > 0) {
-        args[args_count++] = atof(buf);
+        args[args_count++] = atoi(buf);
         buf[0] = 0;
         return (args_count == arg_count[command]);
     }

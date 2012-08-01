@@ -35,6 +35,7 @@ Motor left_motor(&OCR0A, &OCR0B);
 Motor right_motor(&OCR2B, &OCR2A);
 Encoder left_encoder(left_motor, &PINB, _BV(PORTB0));
 Encoder right_encoder(right_motor, &PINC, _BV(PORTC5));
+int16_t left_target, right_target;
 
 static void run_motor(Motor& motor, float speed) {
     motor.set_direction(speed > 0 ? Motor::FORWARDS : Motor::BACKWARDS);
@@ -44,11 +45,14 @@ static void run_motor(Motor& motor, float speed) {
 
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
-        printf("%d %f %f\n", parser.command, parser.args[0], parser.args[1]);
+        printf("%d %d %d\n", parser.command, parser.args[0], parser.args[1]);
         if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
-            run_motor(left_motor, parser.args[0]);
-            run_motor(right_motor, parser.args[1]);
-            printf("%d %d\n", OCR0A, OCR0B);
+            left_target = left_encoder.get_count() + parser.args[0];
+            right_target = right_encoder.get_count() + parser.args[1];
+            left_motor.direction = parser.args[0] < 0 ? Motor::BACKWARDS : Motor::FORWARDS;
+            right_motor.direction = parser.args[1] < 0 ? Motor::BACKWARDS : Motor::FORWARDS;
+            if (parser.args[0] != 0) left_motor.set_speed(255);
+            if (parser.args[1] != 0) right_motor.set_speed(255);
         } else
             printf("%d %d\n", left_encoder.get_count(), right_encoder.get_count());
     }
@@ -137,9 +141,13 @@ int main(void) {
         while (events) {
             if (events & Events::MOTORL) {
                 left_encoder.check();
+                if (left_encoder.get_count() == left_target)
+                    left_motor.set_speed(0);
                 events &= ~Events::MOTORL;
             } else if (events & Events::MOTORR) {
                 right_encoder.check();
+                if (right_encoder.get_count() == right_target)
+                    right_motor.set_speed(0);
                 events &= ~Events::MOTORR;
             } else if (events & Events::SERIAL_RX)
                 handle_input();
