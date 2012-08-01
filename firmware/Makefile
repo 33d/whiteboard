@@ -2,7 +2,7 @@ PROJECT	       = whiteboard
 
 PRG            = $(PROJECT)
 OBJECTS        = parser
-AVR_OBJECTS    = serial whiteboard
+AVR_OBJECTS    = serial whiteboard encoder
 TEST_OBJECTS   = parsertest test
 
 ARDUINO_HOME  ?= /opt/arduino-0018

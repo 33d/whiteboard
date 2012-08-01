@@ -6,6 +6,7 @@
 #include "parser.h"
 #include "serial.h" // for printf
 #include "motor.h"
+#include "encoder.h"
 
 // Serial port settings
 #define SERIAL_BAUD 9600
@@ -22,6 +23,8 @@
 
 namespace Events {
     const uint8_t SERIAL_RX = 1;
+    const uint8_t MOTORL = 2;
+    const uint8_t MOTORR = 4;
     char serial_rx;
 }
 #define events (GPIOR0)
@@ -30,6 +33,8 @@ Parser parser;
 
 Motor left_motor(&OCR0A, &OCR0B);
 Motor right_motor(&OCR2B, &OCR2A);
+Encoder left_encoder(left_motor, &PINB, _BV(PORTB0));
+Encoder right_encoder(right_motor, &PINC, _BV(PORTC5));
 
 static void run_motor(Motor& motor, float speed) {
     motor.set_direction(speed > 0 ? Motor::FORWARDS : Motor::BACKWARDS);
@@ -44,9 +49,18 @@ static void handle_input() {
             run_motor(left_motor, parser.args[0]);
             run_motor(right_motor, parser.args[1]);
             printf("%d %d\n", OCR0A, OCR0B);
-        }
+        } else
+            printf("%d %d\n", left_encoder.get_count(), right_encoder.get_count());
     }
     events &= ~Events::SERIAL_RX;
+}
+
+ISR(PCINT0_vect) {
+    events |= Events::MOTORL;
+}
+
+ISR(PCINT1_vect) {
+    events |= Events::MOTORR;
 }
 
 ISR(USART_RX_vect) {
@@ -96,10 +110,21 @@ void init_timers() {
     TCCR1B = _BV(CS12) | _BV(CS10); // 1024x prescaling
 }
 
+static void init_encoders() {
+    DDRB &= ~_BV(PORTB0);
+    DDRC &= ~_BV(PORTC5);
+
+    // Enable interrupts
+    PCMSK0 = _BV(PCINT0); // pin B0
+    PCMSK1 = _BV(PCINT13); // pin C5
+    PCICR = _BV(PCIE1) | _BV(PCIE0);
+}
+
 int main(void) {
     init_serial();
     serial_init();
     init_timers();
+    init_encoders();
 
     DDRB |= _BV(PORTB5);
     // Set the motors as outputs
@@ -109,8 +134,16 @@ int main(void) {
     sei();
 
     while(true) {
-        if (events & Events::SERIAL_RX)
-            handle_input();
+        while (events) {
+            if (events & Events::MOTORL) {
+                left_encoder.check();
+                events &= ~Events::MOTORL;
+            } else if (events & Events::MOTORR) {
+                right_encoder.check();
+                events &= ~Events::MOTORR;
+            } else if (events & Events::SERIAL_RX)
+                handle_input();
+        }
         sleep_mode();
     }
 }
