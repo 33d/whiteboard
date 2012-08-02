@@ -36,12 +36,6 @@ Motor right_motor(&OCR2B, &OCR2A);
 Encoder left_encoder(left_motor, &PINB, _BV(PORTB0));
 Encoder right_encoder(right_motor, &PINC, _BV(PORTC5));
 
-static void run_motor(Motor& motor, float speed) {
-    motor.set_direction(speed > 0 ? Motor::FORWARDS : Motor::BACKWARDS);
-    if (speed < 0) speed = -speed;
-    motor.set_speed((uint8_t) (speed * 255));
-}
-
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
         printf("%d %d %d\n", parser.command, parser.args[0], parser.args[1]);
