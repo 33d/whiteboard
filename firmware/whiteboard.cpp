@@ -5,8 +5,7 @@
 #include <avr/sleep.h>
 #include "parser.h"
 #include "serial.h" // for printf
-#include "driver.h"
-#include "encoder.h"
+#include "motor.h"
 
 // Serial port settings
 #define SERIAL_BAUD 9600
@@ -31,23 +30,19 @@ namespace Events {
 
 Parser parser;
 
-Driver left_motor(&OCR0A, &OCR0B);
-Driver right_motor(&OCR2B, &OCR2A);
-Encoder left_encoder(left_motor, &PINB, _BV(PORTB0));
-Encoder right_encoder(right_motor, &PINC, _BV(PORTC5));
+Motor motors[] = {
+    Motor(&OCR0A, &OCR0B, &PINB, _BV(PORTB0)),
+    Motor(&OCR2B, &OCR2A, &PINC, _BV(PORTC5))
+};
 
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
         printf("%d %d %d\n", parser.command, parser.args[0], parser.args[1]);
         if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
-            left_encoder.expected += parser.args[0];
-            right_encoder.expected += parser.args[1];
-            left_motor.direction = parser.args[0] < 0 ? Driver::BACKWARDS : Driver::FORWARDS;
-            right_motor.direction = parser.args[1] < 0 ? Driver::BACKWARDS : Driver::FORWARDS;
-            if (parser.args[0] != 0) left_motor.set_speed(255);
-            if (parser.args[1] != 0) right_motor.set_speed(255);
+            motors[0].move(parser.args[0]);
+            motors[1].move(parser.args[1]);
         } else
-            printf("%d %d\n", left_encoder.get_count(), right_encoder.get_count());
+            printf("%d %d\n", motors[0].encoder.get_count(), motors[1].encoder.get_count());
     }
     events &= ~Events::SERIAL_RX;
 }
@@ -133,14 +128,14 @@ int main(void) {
     while(true) {
         while (events) {
             if (events & Events::MOTORL) {
-                left_encoder.check();
-                if (left_encoder.get_count() == left_encoder.expected)
-                    left_motor.set_speed(0);
+                motors[0].encoder.check();
+                if (motors[0].encoder.get_count() == motors[0].encoder.expected)
+                    motors[0].driver.set_speed(0);
                 events &= ~Events::MOTORL;
             } else if (events & Events::MOTORR) {
-                right_encoder.check();
-                if (right_encoder.get_count() == right_encoder.expected)
-                    right_motor.set_speed(0);
+                motors[1].encoder.check();
+                if (motors[1].encoder.get_count() == motors[1].encoder.expected)
+                    motors[1].driver.set_speed(0);
                 events &= ~Events::MOTORR;
             } else if (events & Events::SERIAL_RX)
                 handle_input();
