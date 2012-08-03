@@ -1,9 +1,9 @@
-#ifndef MOTOR_H_
-#define MOTOR_H_
+#ifndef DRIVER_H_
+#define DRIVER_H_
 
 #include <stdint.h>
 
-class Motor {
+class Driver {
 public:
     enum Direction { FORWARDS, BACKWARDS };
     Direction direction;
@@ -13,7 +13,7 @@ private:
     volatile uint8_t* const f_reg;
 
 public:
-    Motor(volatile uint8_t* b_reg, volatile uint8_t* f_reg)
+    Driver(volatile uint8_t* b_reg, volatile uint8_t* f_reg)
         : b_reg(b_reg), f_reg(f_reg) {}
     void set_direction(Direction direction) { this->direction = direction; }
     void set_speed(uint8_t speed) {

@@ -2,7 +2,7 @@
 #define ENCODER_H
 
 #include <stdint.h>
-#include "motor.h"
+#include "driver.h"
 
 /**
  * Handles the encoder counting.  get_count() returns the pulse count; this
@@ -11,7 +11,7 @@
  * per revolution).
  */
 class Encoder {
-    const Motor& motor;
+    const Driver& driver;
     volatile const uint8_t* const port;
     const uint8_t pin;
     int16_t count;
@@ -21,8 +21,8 @@ public:
     /**
      * @param port The PINx value for the input.
      */
-    Encoder(const Motor& motor, volatile const uint8_t* const port, uint8_t pin)
-        : motor(motor), port(port), pin(pin) {}
+    Encoder(const Driver& driver, volatile const uint8_t* const port, uint8_t pin)
+        : driver(driver), port(port), pin(pin) {}
     void check();
     int16_t get_count() { return count; }
     // The value this motor is *supposed* to have.  The motor will overrun

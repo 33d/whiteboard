@@ -5,7 +5,7 @@
 #include <avr/sleep.h>
 #include "parser.h"
 #include "serial.h" // for printf
-#include "motor.h"
+#include "driver.h"
 #include "encoder.h"
 
 // Serial port settings
@@ -31,8 +31,8 @@ namespace Events {
 
 Parser parser;
 
-Motor left_motor(&OCR0A, &OCR0B);
-Motor right_motor(&OCR2B, &OCR2A);
+Driver left_motor(&OCR0A, &OCR0B);
+Driver right_motor(&OCR2B, &OCR2A);
 Encoder left_encoder(left_motor, &PINB, _BV(PORTB0));
 Encoder right_encoder(right_motor, &PINC, _BV(PORTC5));
 
@@ -42,8 +42,8 @@ static void handle_input() {
         if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
             left_encoder.expected += parser.args[0];
             right_encoder.expected += parser.args[1];
-            left_motor.direction = parser.args[0] < 0 ? Motor::BACKWARDS : Motor::FORWARDS;
-            right_motor.direction = parser.args[1] < 0 ? Motor::BACKWARDS : Motor::FORWARDS;
+            left_motor.direction = parser.args[0] < 0 ? Driver::BACKWARDS : Driver::FORWARDS;
+            right_motor.direction = parser.args[1] < 0 ? Driver::BACKWARDS : Driver::FORWARDS;
             if (parser.args[0] != 0) left_motor.set_speed(255);
             if (parser.args[1] != 0) right_motor.set_speed(255);
         } else
