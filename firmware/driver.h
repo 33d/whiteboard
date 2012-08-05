@@ -28,6 +28,7 @@ public:
             *b_reg = speed;
         }
     }
+    uint8_t get_speed() { return *b_reg == 0 ? *f_reg : *b_reg; }
 };
 
 #endif /* MOTOR_H_ */

@@ -6,6 +6,7 @@
 #include "parser.h"
 #include "serial.h" // for printf
 #include "motor.h"
+#include "motors.h"
 
 // Serial port settings
 #define SERIAL_BAUD 9600
@@ -34,15 +35,16 @@ Motor motors[] = {
     Motor(&OCR0A, &OCR0B, &PINB, _BV(PORTB0)),
     Motor(&OCR2B, &OCR2A, &PINC, _BV(PORTC5))
 };
+Motors motor_manager(motors);
 
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
         printf("%d %d %d\n", parser.command, parser.args[0], parser.args[1]);
         if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
-            motors[0].move(parser.args[0]);
-            motors[1].move(parser.args[1]);
+            motor_manager.move(parser.args);
         } else
-            printf("%d %d\n", motors[0].encoder.get_count(), motors[1].encoder.get_count());
+            printf("%d %d %d %d\n", motors[0].encoder.get_count(), motors[1].encoder.get_count(),
+                    motors[0].driver.get_speed(), motors[1].driver.get_speed());
     }
     events &= ~Events::SERIAL_RX;
 }
@@ -128,14 +130,10 @@ int main(void) {
     while(true) {
         while (events) {
             if (events & Events::MOTORL) {
-                motors[0].encoder.check();
-                if (motors[0].encoder.get_count() == motors[0].encoder.expected)
-                    motors[0].driver.set_speed(0);
+                motor_manager.check(0);
                 events &= ~Events::MOTORL;
             } else if (events & Events::MOTORR) {
-                motors[1].encoder.check();
-                if (motors[1].encoder.get_count() == motors[1].encoder.expected)
-                    motors[1].driver.set_speed(0);
+                motor_manager.check(1);
                 events &= ~Events::MOTORR;
             } else if (events & Events::SERIAL_RX)
                 handle_input();

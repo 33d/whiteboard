@@ -25,9 +25,6 @@ public:
         : driver(driver), port(port), pin(pin) {}
     void check();
     int16_t get_count() { return count; }
-    // The value this motor is *supposed* to have.  The motor will overrun
-    // this value as it stops.
-    int16_t expected;
 };
 
 #endif
