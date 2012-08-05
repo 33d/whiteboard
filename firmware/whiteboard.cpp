@@ -95,7 +95,7 @@ void init_timers() {
         | _BV(COM2B1) | _BV(COM2B0)
         // Fast PWM mode, between 0 and 0xFF
         | _BV(WGM21) | _BV(WGM20);
-    TCCR0B =
+    TCCR2B =
         // 8x prescaling
         _BV(CS21);
 
