@@ -11,7 +11,7 @@ class Motors {
     uint8_t fastest, slowest;
     // The value each motor is *supposed* to have.  The motor will overrun
     // this value as it stops.
-    int16_t expected[2];
+    uint16_t expected[2];
 
 public:
     Motors(Motor motors[2])

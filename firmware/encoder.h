@@ -14,10 +14,10 @@ class Encoder {
     const Driver& driver;
     volatile const uint8_t* const port;
     const uint8_t pin;
-    int16_t count;
     bool old;
 
 public:
+    uint16_t count;
     /**
      * @param port The PINx value for the input.
      */
