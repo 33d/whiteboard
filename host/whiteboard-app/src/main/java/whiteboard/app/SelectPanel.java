@@ -26,6 +26,8 @@ public class SelectPanel extends JPanel {
     
     private final JFormattedTextField reelSpacingField = new JFormattedTextField(500.0);
     private final JFormattedTextField reelRadiusField = new JFormattedTextField(25.0);
+    private final JFormattedTextField pulsesPerRotationField = new JFormattedTextField(282.0);
+    private final JFormattedTextField pulleyRadiusField = new JFormattedTextField(0.0);
     private final JFormattedTextField startXField = new JFormattedTextField(250.0);
     private final JFormattedTextField startYField = new JFormattedTextField(220.0);
     private final JTextField filenameField = new JTextField();
@@ -89,6 +91,10 @@ public class SelectPanel extends JPanel {
         add(chooseFileButton, "skip 1, wrap, grow 0");
         add(new JLabel("Reel radius"));
         add(reelRadiusField, "wrap");
+        add(new JLabel("Radians per pulse"));
+        add(pulsesPerRotationField, "wrap");
+        add(new JLabel("Pulley radius"));
+        add(pulleyRadiusField, "wrap");
         add(new JLabel("Reel spacing"));
         add(reelSpacingField, "wrap");
         add(new JLabel("Start position left"));
@@ -103,6 +109,7 @@ public class SelectPanel extends JPanel {
         Converter c = new Converter();
         c.setReelRadius((Double) reelRadiusField.getValue());
         c.setReelSpacing((Double) reelSpacingField.getValue());
+        c.setPulsesPerRotation((Double) pulsesPerRotationField.getValue());
         c.setStartX((Double) startXField.getValue());
         c.setStartY((Double) startYField.getValue());
         

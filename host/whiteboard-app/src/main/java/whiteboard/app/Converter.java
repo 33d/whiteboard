@@ -12,6 +12,8 @@ public class Converter {
     private double startX;
     private double startY;
     private double reelRadius;
+    private double pulsesPerRadian;
+    private double pulleyRadius;
     // The longest line that should be drawn
     private double breakDistance = 5;
     private AffineTransform transform;
@@ -55,11 +57,12 @@ public class Converter {
                 throw new IllegalStateException("Unhandled segment type " + type);    
             }
             
-            // convert the difference to radians
+            // convert the difference to pulses
+            int[] pulses = new int[2];
             for (int i = 0; i < 2; i++)
-                diff[i] /= reelRadius;
+                pulses[i] = (int) Math.round(diff[i] / reelRadius * pulsesPerRadian);
             
-            out.printf("%.6f %.6f ", diff[0], diff[1]);
+            out.printf("%d %d ", pulses[0], pulses[1]);
             
             s = s1;
             path.next();
@@ -97,5 +100,14 @@ public class Converter {
     }
     public void setTransform(AffineTransform transform) {
         this.transform = transform;
+    }
+    public void setPulsesPerRotation(double pulsesPerRotation) {
+        this.pulsesPerRadian = pulsesPerRotation / (Math.PI / 2);
+    }
+    public double getPulleyRadius() {
+        return pulleyRadius;
+    }
+    public void setPulleyRadius(double pulleyRadius) {
+        this.pulleyRadius = pulleyRadius;
     }
 }

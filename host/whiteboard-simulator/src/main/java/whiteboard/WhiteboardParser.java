@@ -49,7 +49,7 @@ public class WhiteboardParser {
     
     private void step() {
         stepping = true;
-        double left = Double.NaN;
+        int left = Integer.MIN_VALUE;
         
         try {
             parseloop: while(true) {
@@ -60,10 +60,10 @@ public class WhiteboardParser {
                     whiteboard.setDrawing(false);
                 else {
                     try {
-                        if (Double.isNaN(left))
-                            left = Double.parseDouble(token);
+                        if (Integer.MIN_VALUE == left)
+                            left = Integer.parseInt(token);
                         else {
-                            double right = Double.parseDouble(token);
+                            int right = Integer.parseInt(token);
                             whiteboard.moveWheels(left, right);
                             break parseloop;
                         }
