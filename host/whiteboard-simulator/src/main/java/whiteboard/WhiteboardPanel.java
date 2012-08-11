@@ -134,7 +134,7 @@ public class WhiteboardPanel extends JPanel implements Whiteboard {
     };
     
     @Override
-    public void moveWheels(final double... w) {
+    public void moveWheels(final int... w) {
         if (animator != null)
             animator.stop();
         double max = Math.max(Math.abs(w[0]), Math.abs(w[1]));

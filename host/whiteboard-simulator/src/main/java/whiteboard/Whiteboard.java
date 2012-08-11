@@ -6,6 +6,6 @@ import java.beans.PropertyChangeListener;
 public interface Whiteboard {
     public void setDrawing(boolean drawing);
     public boolean isRunning();
-    public void moveWheels(final double... w);
+    public void moveWheels(final int... w);
     public void addPropertyChangeListener(PropertyChangeListener runningListener);
 }

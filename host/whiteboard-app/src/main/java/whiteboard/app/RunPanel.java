@@ -5,11 +5,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -110,8 +110,11 @@ public class RunPanel extends JPanel implements Whiteboard {
     }
 
     @Override
-    public void moveWheels(double... w) {
-        // TODO Auto-generated method stub
-        
+    public void moveWheels(int... w) {
+        controller.run(w[0], w[1]);
+    }
+    
+    public AbstractButton getStartButton() {
+        return startButton;
     }
 }

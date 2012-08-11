@@ -1,6 +1,7 @@
 package whiteboard.app;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -91,15 +92,20 @@ public class SelectPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent ev) {
             try {
-                byte[] data = createOutput();
+                final byte[] data = createOutput();
                 SerialController controller = new SerialController(portField.getText());
-                RunPanel p = new RunPanel(controller);
+                final RunPanel p = new RunPanel(controller);
                 JDialog d = new JDialog(SwingUtilities.getWindowAncestor(SelectPanel.this));
                 d.setContentPane(p);
                 d.pack();
                 d.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                 d.setVisible(true);
-                new WhiteboardParser(p, data).start();
+                p.getStartButton().addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                        new WhiteboardParser(p, data).start();
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace(); // todo: show a dialog
             }
