@@ -19,7 +19,9 @@
 #define SERIAL_UBRR_VAL ((F_CPU / 16 / SERIAL_BAUD) - 1)
 #endif
 
-#define MS_PER_TIMER1_TICK (1024 / F_CPU * 1000)
+#define SERVO_TOP (F_CPU / 50 / 64) // 50=servo signal, 64=prescaling
+// How far from the centre to move the servo
+#define SERVO_MOVEMENT (SERVO_TOP / 4)
 
 namespace Events {
     const uint8_t SERIAL_RX = 1;
@@ -35,11 +37,13 @@ Motor motors[] = {
     Motor(&OCR0A, &OCR0B, &PINB, _BV(PORTB0)),
     Motor(&OCR2B, &OCR2A, &PINC, _BV(PORTC5))
 };
-Motors motor_manager(motors);
+Motors motor_manager(motors, &OCR1A,
+        SERVO_TOP / 2 + SERVO_MOVEMENT, SERVO_TOP / 2 - SERVO_MOVEMENT);
 
 static void handle_input() {
     if (parser.handle(Events::serial_rx)) {
         if (parser.command == Parser::DRAW || parser.command == Parser::MOVE) {
+//            motor_manager.set_drawing(parser.command == Parser::DRAW);
             motor_manager.move(parser.args);
         }
     }
@@ -102,9 +106,17 @@ void init_timers() {
         // 8x prescaling
         _BV(CS21);
 
-    // Use timer 1 for the clock
-    TCCR1A = 0; // Normal mode, no output
-    TCCR1B = _BV(CS12) | _BV(CS10); // 1024x prescaling
+    // Use timer 1 for the servo
+    ICR1 = SERVO_TOP;
+    OCR1A = SERVO_TOP / 2; // set to midpoint
+    TCCR1A =
+            // Output on OC1A (PB1). Clear on compare match, set on overflow.
+            _BV(COM1A1)
+            // Fast PWM, top=ICR1
+            | _BV(WGM11);
+    TCCR1B = _BV(WGM13) | _BV(WGM12)
+            // 64x prescaling (although 8x should do)
+            | _BV(CS11) | _BV(CS10);
 }
 
 static void init_encoders() {
@@ -123,9 +135,11 @@ int main(void) {
     init_timers();
     init_encoders();
 
-    DDRB |= _BV(PORTB5);
-    // Set the motors as outputs
-    DDRB |= _BV(PORTB3);
+    DDRB |= _BV(PORTB5)
+    // Set the servo output
+          | _BV(PORTB1)
+    // and the motors
+          | _BV(PORTB3);
     DDRD |= _BV(PORTD3) | _BV(PORTD5) | _BV(PORTD6);
 
     sei();

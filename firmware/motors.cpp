@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "motors.h"
+#include <util/delay.h>
 
 void Motors::move(int16_t dist[2]) {
     uint16_t adist[] = { abs(dist[0]), abs(dist[1]) };
@@ -25,4 +26,12 @@ void Motors::check(uint8_t motor) {
     motors[motor].encoder.check();
     if (motors[motor].encoder.get_count() >= expected[motor])
         motors[motor].driver.set_speed(0);
+}
+
+void Motors::set_drawing(bool is_drawing) {
+    if (is_drawing != this->is_drawing) {
+        *servo_reg = is_drawing ? servo_draw : servo_move;
+        _delay_ms(300);
+        this->is_drawing = is_drawing;
+    }
 }
