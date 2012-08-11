@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 class Motors {
-    Motor* motors;
     // The indices of the fastest and slowest motors.  The slowest will need
     // to be speed controlled.
     uint8_t fastest, slowest;
@@ -14,6 +13,7 @@ class Motors {
     uint16_t expected[2];
 
 public:
+    Motor* motors;
     Motors(Motor motors[2])
         : motors(motors) {
         expected[0] = 0; expected[1] = 0;
