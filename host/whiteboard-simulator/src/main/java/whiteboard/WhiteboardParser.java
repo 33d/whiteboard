@@ -5,15 +5,14 @@ import static java.lang.Boolean.FALSE;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 public class WhiteboardParser {
     
-    private final WhiteboardPanel whiteboard;
+    private final Whiteboard whiteboard;
     private boolean stepping = false;
     private final ByteArrayInputStream in;
 
-    public WhiteboardParser(WhiteboardPanel whiteboard, byte[] data) {
+    public WhiteboardParser(Whiteboard whiteboard, byte[] data) {
         this.whiteboard = whiteboard;
         whiteboard.addPropertyChangeListener(runningListener);
         in = new ByteArrayInputStream(data);

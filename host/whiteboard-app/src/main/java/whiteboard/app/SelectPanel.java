@@ -17,9 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import net.miginfocom.swing.MigLayout;
+import whiteboard.SerialController;
 import whiteboard.WhiteboardPanel;
 import whiteboard.WhiteboardParser;
 import whiteboard.svgreader.SvgReader;
@@ -32,6 +32,7 @@ public class SelectPanel extends JPanel {
     private final JFormattedTextField pulleyRadiusField = new JFormattedTextField(0.0);
     private final JFormattedTextField startXField = new JFormattedTextField(250.0);
     private final JFormattedTextField startYField = new JFormattedTextField(220.0);
+    private final JTextField portField = new JTextField("/dev/ttyUSB0");
     private final JTextField filenameField = new JTextField();
     private final JButton chooseFileButton 
             = new JButton(new AbstractAction("Choose file") {
@@ -85,6 +86,26 @@ public class SelectPanel extends JPanel {
         }
     });
     
+    private final JButton runButton 
+            = new JButton(new AbstractAction("Go!") {
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            try {
+                byte[] data = createOutput();
+                SerialController controller = new SerialController(portField.getText());
+                RunPanel p = new RunPanel(controller);
+                JDialog d = new JDialog(SwingUtilities.getWindowAncestor(SelectPanel.this));
+                d.setContentPane(p);
+                d.pack();
+                d.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                d.setVisible(true);
+                new WhiteboardParser(p, data).start();
+            } catch (IOException e) {
+                e.printStackTrace(); // todo: show a dialog
+            }
+        }
+        });
+
     public SelectPanel() {
         super(new MigLayout("", "[right]rel[300lp,grow,fill]"));
         
@@ -103,8 +124,10 @@ public class SelectPanel extends JPanel {
         add(startXField, "wrap");
         add(new JLabel("Start position down"));
         add(startYField, "wrap");
+        add(new JLabel("Port"));
+        add(portField, "wrap");
         add(previewButton, "span, split 2");
-        add(simulateButton, "wrap");
+        add(runButton, "wrap");
     }
     
     private byte[] createOutput() throws IOException {

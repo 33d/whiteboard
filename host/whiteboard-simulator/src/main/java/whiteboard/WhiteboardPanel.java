@@ -17,14 +17,11 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import org.jdesktop.core.animation.timing.Animator;
 import org.jdesktop.core.animation.timing.TimingSource;
@@ -32,7 +29,7 @@ import org.jdesktop.core.animation.timing.TimingTarget;
 import org.jdesktop.core.animation.timing.TimingTargetAdapter;
 import org.jdesktop.swing.animation.timing.sources.SwingTimerTimingSource;
 
-public class WhiteboardPanel extends JPanel {
+public class WhiteboardPanel extends JPanel implements Whiteboard {
 
     private final BufferedImage output;
     private final double wheelRadius;
@@ -136,6 +133,7 @@ public class WhiteboardPanel extends JPanel {
         }
     };
     
+    @Override
     public void moveWheels(final double... w) {
         if (animator != null)
             animator.stop();
@@ -258,6 +256,7 @@ public class WhiteboardPanel extends JPanel {
         firePropertyChange("running", this.running, this.running = running);
     }
     
+    @Override
     public boolean isRunning() {
         return running;
     }
@@ -266,6 +265,7 @@ public class WhiteboardPanel extends JPanel {
         return drawing;
     }
 
+    @Override
     public void setDrawing(boolean drawing) {
         this.drawing = drawing;
     }
