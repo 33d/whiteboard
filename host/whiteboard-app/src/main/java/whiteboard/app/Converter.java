@@ -20,8 +20,8 @@ public class Converter {
     
     private double[] calculateLengths(double x, double y) {
         return new double[] {
-            Math.sqrt(x*x + y*y - reelRadius*reelRadius),
-            Math.sqrt(Math.pow(reelSpacing - x, 2) + y*y - reelRadius*reelRadius)
+            Math.sqrt(x*x + y*y - pulleyRadius*pulleyRadius),
+            Math.sqrt(Math.pow(reelSpacing - x, 2) + y*y - pulleyRadius*pulleyRadius)
         };
     }
     
