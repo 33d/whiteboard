@@ -120,7 +120,7 @@ public class SelectPanel extends JPanel {
         add(chooseFileButton, "skip 1, wrap, grow 0");
         add(new JLabel("Reel radius"));
         add(reelRadiusField, "wrap");
-        add(new JLabel("Radians per pulse"));
+        add(new JLabel("Pulses per rotation"));
         add(pulsesPerRotationField, "wrap");
         add(new JLabel("Pulley radius"));
         add(pulleyRadiusField, "wrap");
