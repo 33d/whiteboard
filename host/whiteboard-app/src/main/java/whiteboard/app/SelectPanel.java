@@ -163,7 +163,10 @@ public class SelectPanel extends JPanel {
 
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        f.setContentPane(new SelectPanel());
+        SelectPanel p = new SelectPanel();
+        if (args.length > 0)
+            p.filenameField.setText(args[0]);
+        f.setContentPane(p);
         f.pack();
         f.setVisible(true);
     }
