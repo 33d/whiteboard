@@ -1,11 +1,14 @@
 package whiteboard.app;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -14,7 +17,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -57,7 +63,7 @@ public class SelectPanel extends JPanel {
                 d.pack();
                 d.setVisible(true);
             } catch (IOException e) {
-                e.printStackTrace(); // todo: show a dialog
+                croak(e);
             }
         }
     });
@@ -86,7 +92,7 @@ public class SelectPanel extends JPanel {
                 
                 new WhiteboardParser(p, data).start();
             } catch (IOException e) {
-                e.printStackTrace(); // todo: show a dialog
+                croak(e);
             }
         }
     });
@@ -111,7 +117,7 @@ public class SelectPanel extends JPanel {
                     }
                 });
             } catch (IOException e) {
-                e.printStackTrace(); // todo: show a dialog
+                croak(e);
             }
         }
         });
@@ -159,6 +165,14 @@ public class SelectPanel extends JPanel {
         c.convert(reader.getPathIterator(t), out);
         
         return out.toByteArray();
+    }
+    
+    private void croak(Throwable t) {
+        StringWriter out = new StringWriter();
+        t.printStackTrace(new PrintWriter(out, true));
+        JScrollPane message = new JScrollPane(new JTextArea(out.toString()));
+        message.setPreferredSize(new Dimension(600, 300));
+        JOptionPane.showMessageDialog(this, message);
     }
 
     public static void main(String[] args) {
