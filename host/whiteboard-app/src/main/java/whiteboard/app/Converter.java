@@ -102,7 +102,7 @@ public class Converter {
         this.transform = transform;
     }
     public void setPulsesPerRotation(double pulsesPerRotation) {
-        this.pulsesPerRadian = pulsesPerRotation / (Math.PI / 2);
+        this.pulsesPerRadian = pulsesPerRotation / (Math.PI * 2);
     }
     public double getPulleyRadius() {
         return pulleyRadius;

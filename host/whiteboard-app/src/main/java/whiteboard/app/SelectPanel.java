@@ -69,8 +69,12 @@ public class SelectPanel extends JPanel {
                 byte[] data = createOutput();
                 
                 WhiteboardPanel p = new WhiteboardPanel(
-                        (Double) reelRadiusField.getValue(),
+                        (Double) pulleyRadiusField.getValue(),
                         (Double) reelSpacingField.getValue(),
+                        (Double) reelRadiusField.getValue(),
+                        (Double) pulsesPerRotationField.getValue(),
+                        (Double) startXField.getValue(),
+                        (Double) startYField.getValue(),
                         1024
                 );
                 
@@ -132,7 +136,8 @@ public class SelectPanel extends JPanel {
         add(startYField, "wrap");
         add(new JLabel("Port"));
         add(portField, "wrap");
-        add(previewButton, "span, split 2");
+        add(previewButton, "span, split 3");
+        add(simulateButton, "");
         add(runButton, "wrap");
     }
     
@@ -141,6 +146,7 @@ public class SelectPanel extends JPanel {
         c.setReelRadius((Double) reelRadiusField.getValue());
         c.setReelSpacing((Double) reelSpacingField.getValue());
         c.setPulsesPerRotation((Double) pulsesPerRotationField.getValue());
+        c.setPulleyRadius((Double) pulleyRadiusField.getValue());
         c.setStartX((Double) startXField.getValue());
         c.setStartY((Double) startYField.getValue());
         
