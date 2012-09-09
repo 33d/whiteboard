@@ -251,6 +251,7 @@ public class WhiteboardPanel extends JPanel implements Whiteboard {
         t = g.getTransform();
         g.translate(pulleySeparation + pulleyRadius, pulleyRadius);
         t1 = g.getTransform();
+        g.scale(-1, 1);
         g.rotate(r.angles[1]);
         drawString(g, strings[1]);
         g.setTransform(t1);
