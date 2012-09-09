@@ -109,8 +109,11 @@ public class SelectPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent ev) {
             final String port = portField.getText();
-            if (windows.containsKey(port))
+            JDialog oldDialog = windows.get(port);
+            if (oldDialog != null) {
+                oldDialog.toFront();
                 return;
+            }
             
             try {
                 final byte[] data = createOutput();
