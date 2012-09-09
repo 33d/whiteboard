@@ -11,6 +11,7 @@ import gnu.io.UnsupportedCommOperationException;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,7 +19,7 @@ import java.util.TooManyListenersException;
 
 import javax.swing.SwingUtilities;
 
-public class SerialController {
+public class SerialController implements Closeable {
 
     private final SerialPort port;
     private final OutputStream out;
@@ -71,6 +72,10 @@ public class SerialController {
     
     public void stop() {
         setRunning(false);
+    }
+    
+    public void close() {
+        port.close();
     }
     
     private SerialPortEventListener portListener = new SerialPortEventListener() {

@@ -3,12 +3,16 @@ package whiteboard.app;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -99,11 +103,19 @@ public class SelectPanel extends JPanel {
     
     private final JButton runButton 
             = new JButton(new AbstractAction("Go!") {
+        // One dialog for each serial port
+        private Map<String, JDialog> windows = new HashMap<String, JDialog>();
+                
         @Override
         public void actionPerformed(ActionEvent ev) {
+            final String port = portField.getText();
+            if (windows.containsKey(port))
+                return;
+            
             try {
                 final byte[] data = createOutput();
-                SerialController controller = new SerialController(portField.getText());
+                final SerialController controller 
+                    = new SerialController(port);
                 final RunPanel p = new RunPanel(controller);
                 JDialog d = new JDialog(SwingUtilities.getWindowAncestor(SelectPanel.this));
                 d.setContentPane(p);
@@ -114,6 +126,15 @@ public class SelectPanel extends JPanel {
                     @Override
                     public void actionPerformed(ActionEvent arg0) {
                         new WhiteboardParser(p, data).start();
+                    }
+                });
+                
+                windows.put(portField.getText(), d);
+                d.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        controller.close();
+                        windows.remove(port);
                     }
                 });
             } catch (IOException e) {
